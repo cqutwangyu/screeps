@@ -24,7 +24,7 @@ function gameRoomsRun() {
 function creepsRun() {
     //creep生产工厂
     creepsFactory.run();
-    // searcingResources()
+    searcingResources()
     for (var name in Game.creeps) {
         if (!Game.creeps[name]) {
             delete Memory.creeps[name];

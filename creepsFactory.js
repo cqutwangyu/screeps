@@ -1,6 +1,6 @@
 let spawnName = 'W';
-let roles = ['harvester', 'upgrader', 'mediator', 'builder'];
-let roleSize = [5, 4, 2, 2];
+let roles = ['harvester', 'upgrader', 'builder', 'mediator'];
+let roleSize = [5, 4, 2, 1];
 var creepSize = [0, 0, 0, 0];
 //work:100,carry:50,move:50
 let creepBodys = [
@@ -21,7 +21,6 @@ function spawnCreep() {
         creepSize[index] = roleList.length;
         if (roleList.length < roleSize[index]) {
             maxSize = false;
-            break;
         }
     }
     var creepBody = null;
@@ -54,7 +53,6 @@ function getCreepBody(engery) {
 var creepsFactory = {
     run: function () {
         var logInfo = '';
-        var spawnCreepInfo = '';
         var spawnFlag = true;
         var printFlag = true;
         for (let index = 0; index < roles.length; index++) {
@@ -89,7 +87,6 @@ var creepsFactory = {
                 // }
 
                 if (spawnFlag) {
-                    spawnCreepInfo = spawnCreepInfo + ' ready spawn ' + spawnCreepName + ' '
                     var create = Game.spawns[spawnName].spawnCreep(creepBody, spawnCreepName,
                         {
                             memory: {
@@ -100,8 +97,7 @@ var creepsFactory = {
                             }
                         });
                     if (create == OK) {
-                        console.log("spawn " + roleName + "body :" + creepBody)
-                        roleLength++;
+                        console.log("spawning " + roleName + "body :" + creepBody)
                     }
                 } else if (creepBody != null && printFlag) {
                     console.log("ready spawn " + spawnCreepName + ":" + creepBody)
@@ -123,8 +119,7 @@ var creepsFactory = {
             console.log("source1:" + source1.length + " " + source1)
         if (ticksToLive.length != 0)
             console.log('dying:' + ticksToLive.length + " " + ticksToLive)
-        console.log(spawnCreepInfo + ' creep of survival => ' + logInfo);
-        console.log(logInfo);
+        console.log('creep of survival => ' + logInfo);
 
 
         //显示正在生产的creep
@@ -135,6 +130,11 @@ var creepsFactory = {
                 Game.spawns[spawnName].pos.x + 1,
                 Game.spawns[spawnName].pos.y,
                 {align: 'left', opacity: 0.8});
+            console.log("spawning " + spawningCreep.name + "body [WORK:"
+                + spawningCreep.getActiveBodyparts(WORK) + ',CARRY:'
+                + spawningCreep.getActiveBodyparts(CARRY) + ',MOVE:'
+                + spawningCreep.getActiveBodyparts(MOVE)+']'
+            )
         }
     }
 };
