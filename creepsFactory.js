@@ -1,6 +1,6 @@
 let spawnName = 'W';
 let roles = ['harvester', 'upgrader', 'builder', 'mediator'];
-let roleSize = [5, 4, 2, 1];
+let roleSize = [10, 2, 3, 1];
 var creepSize = [0, 0, 0, 0];
 //work:100,carry:50,move:50
 let creepBodys = [
@@ -77,12 +77,13 @@ var creepsFactory = {
                     if (create == OK) {
                         console.log("spawning " + roleName + "body :" + creepBody)
                     }
-                } else if (creepBody != null && printFlag) {
+                }
+                if (creepBody != null && printFlag && create != OK) {
                     console.log("ready spawn " + spawnCreepName + ":" + creepBody)
                     printFlag = false;
                 }
             }
-            logInfo = logInfo + ":" + creepSize[index] + " "
+            logInfo = logInfo + ":" + creepSize[index] + "/" + roleSize[index] + " "
         }
 
         //打印日志
@@ -107,11 +108,11 @@ var creepsFactory = {
                 '🛠️' + spawningCreep.memory.role,
                 Game.spawns[spawnName].pos.x + 1,
                 Game.spawns[spawnName].pos.y,
-                {align: 'left', opacity: 0.8});
+                { align: 'left', opacity: 0.8 });
             console.log("spawning " + spawningCreep.name + "body [WORK:"
                 + spawningCreep.getActiveBodyparts(WORK) + ',CARRY:'
                 + spawningCreep.getActiveBodyparts(CARRY) + ',MOVE:'
-                + spawningCreep.getActiveBodyparts(MOVE)+']'
+                + spawningCreep.getActiveBodyparts(MOVE) + ']'
             )
         }
     }

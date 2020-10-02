@@ -8,16 +8,16 @@ var peasant = {
         //     this.resetMiningState(creep);
         // }
         //creep续命
-        if (creep.renew || (creep.ticksToLive < 500 && creep.hitsMax >= 450)) {
-            creep.renew = true;
+        if (creep.memory.renew || (creep.ticksToLive < 500 && creep.hitsMax >= 300)) {
+            creep.memory.renew = true;
             if (Game.spawns[spawnName].renewCreep(creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns[spawnName]);
                 creep.say('✞')
-                return;
             }
             if (creep.ticksToLive >= 1000) {
-                creep.renew = false;
+                creep.memory.renew = false;
             }
+            return;
         }
         //角色任务
         switch (creep.memory.role) {
