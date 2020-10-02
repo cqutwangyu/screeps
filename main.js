@@ -6,7 +6,9 @@ var roomName = 'W33N41'
 let spawnName = 'W';
 module.exports.loop = function () {
     // initMap()
-    buildRoad()
+    //每100time建造一次道路
+    if (Game.time % 100 == 0)
+        buildRoad()
     gameRoomsRun()
     creepsRun()
 }
@@ -33,11 +35,14 @@ function creepsRun() {
         if (creep.fatigue == 0) {
             //creep开始工作
             peasant.run(creep);
+        }else{
+            creep.say('☻')
         }
     }
 }
 
 function initMap() {
+    console.log("initMap")
     var map = [];
     var row = [];
     for (let i = 0; i < 50; i++) {
@@ -65,9 +70,9 @@ function buildRoad() {
                     console.log("build road " + i + '.' + j)
                 }
             }
-            // rowInfo = rowInfo + v + " "
+            rowInfo = rowInfo + v + " "
         }
-        // console.log(rowInfo)
+        console.log(rowInfo)
     }
 }
 

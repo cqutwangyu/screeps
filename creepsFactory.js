@@ -62,39 +62,17 @@ var creepsFactory = {
                 spawnFlag = false;
             }
             logInfo = logInfo + roleName;
-            // var roleList = _.filter(Game.creeps, (creep) => creep.memory.role == roleName);
-            // var roleLength = roleList.length;
             if (creepSize[index] < roleSize[index]) {
                 var spawnCreepName = roleName + (Game.time % 100000);
-                // if (roleLength <= 1 && (roleName == 'mediator' || roleName == 'upgrader')) {
-                //     creepBody = creepBodys[0];
-                // } else if ((roleLength >= 7 || Memory.maxEngery <= 650) && Memory.engery1 >= 650) {
-                //     creepBody = creepBodys[7];
-                // } else if ((roleLength >= 6 || Memory.maxEngery <= 600) && Memory.engery1 >= 600) {
-                //     creepBody = creepBodys[6];
-                // } else if ((roleLength <= 6 || Memory.maxEngery <= 500) && Memory.engery1 >= 500) {
-                //     creepBody = creepBodys[5];
-                // } else if ((roleLength <= 5 || Memory.maxEngery <= 450) && Memory.engery1 >= 450) {
-                //     creepBody = creepBodys[4];
-                // } else if ((roleLength <= 4 || Memory.maxEngery <= 400) && Memory.engery1 >= 400) {
-                //     creepBody = creepBodys[3];
-                // } else if ((roleLength <= 3 || Memory.maxEngery <= 350) && Memory.engery1 >= 350) {
-                //     creepBody = creepBodys[2];
-                // } else if ((roleLength <= 2 || Memory.maxEngery <= 300) && Memory.engery1 >= 300) {
-                //     creepBody = creepBodys[1];
-                // } else if (roleLength < 2) {
-                //     spawnFlag = false;
-                // }
-
                 if (spawnFlag) {
                     var create = Game.spawns[spawnName].spawnCreep(creepBody, spawnCreepName,
                         {
                             memory: {
                                 role: roleName, //角色
-                                directions: BOTTOM_LEFT, //出生移动方向
                                 source: -1, //前往的能量采集点
                                 notpath: -1 //无法到达的能量采集点
-                            }
+                            },
+                            directions: LEFT, //出生移动方向
                         });
                     if (create == OK) {
                         console.log("spawning " + roleName + "body :" + creepBody)

@@ -8,10 +8,15 @@ var peasant = {
         //     this.resetMiningState(creep);
         // }
         //creep续命
-        if (creep.ticksToLive < 500 && creep.hitsMax >= 400) {
+        if (creep.renew || (creep.ticksToLive < 500 && creep.hitsMax >= 450)) {
+            creep.renew = true;
             if (Game.spawns[spawnName].renewCreep(creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns[spawnName]);
+                creep.say('✞')
                 return;
+            }
+            if (creep.ticksToLive >= 1000) {
+                creep.renew = false;
             }
         }
         //角色任务
@@ -73,27 +78,23 @@ var peasant = {
 
         var moveTo = -1;
         if (harvest == ERR_NOT_IN_RANGE) {// && creep.store.getFreeCapacity() > creep.store.getUsedCapacity()
-            moveTo = creep.moveTo(sources[creep.memory.source], {visualizePathStyle: {stroke: '#ffaa00'}});
+            moveTo = creep.moveTo(sources[creep.memory.source], { visualizePathStyle: { stroke: '#ffaa00' } });
             Memory.map[creep.pos.x][creep.pos.y] = Memory.map[creep.pos.x][creep.pos.y] + 1
-            // if (moveTo == ERR_NO_PATH && creep.harvest(sources[creep.memory.source]) == ERR_NOT_IN_RANGE && creep.store.getFreeCapacity() > creep.store.getUsedCapacity()) {
-            //     creep.memory.source = 0;
-            //     moveTo = creep.moveTo(sources[creep.memory.source], { visualizePathStyle: { stroke: '#ffaa00' } });
-            // }
+            creep.say('mining')
         }
         if (harvest == OK) {
             creep.memory.dontPullMe = true;
-            // creep.say("⛏️" + (creep.store.getCapacity() - creep.store.getFreeCapacity()) + "/" + (creep.getActiveBodyparts(CARRY) * 50));
         } else {
             creep.memory.dontPullMe = false;
             if (moveTo == ERR_NO_PATH) {
-                creep.say("🚷" + moveTo);
+                creep.say("⊗");
                 if (creep.memory.notpath == 1) {
                     creep.memory.source = 0
                 } else {
                     creep.memory.source = 1
                 }
             } else {
-                creep.say("🏃" + creep.memory.source);
+                creep.say("➭" + creep.memory.source);
             }
         }
     },
@@ -106,35 +107,41 @@ var peasant = {
     },
 
     storage: function (creep) {
-        var targets = creep.room.find(FIND_STRUCTURES, {
+        //寻找可存放能量的容器
+        var containers = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (structure) => {
                 STRUCTURE_CONTAINER
-                return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                return (structure.structureType == STRUCTURE_EXTENSION ||
+                    structure.structureType == STRUCTURE_CONTAINER ||
+                    structure.structureType == STRUCTURE_SPAWN) &&
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
             }
         });
-        if (targets.length > 0)
-            targets = targets[0]
-        if (creep.transfer(targets, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(targets, {visualizePathStyle: {stroke: '#ffffff'}});
+        if (containers != null) {
+            if (containers.length > 1)
+                containers = containers[0];
+            if (creep.transfer(containers, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(containers, { visualizePathStyle: { stroke: '#ffffff' } });
+                creep.say('☭')
+            }
         }
         this.resetMiningState(creep);
     },
 
     storageSpawn: function (creep) {
-        var targets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+        //寻找可存放能量的扩展容器
+        var extensions = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (structure) => {
                 STRUCTURE_CONTAINER
-                return (structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) ||
-                    (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 50);
+                return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
             }
         });
-
-        if (targets != null) {
-            if (targets.length > 1)
-                targets = targets[0];
-            if (creep.transfer(targets, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targets, {visualizePathStyle: {stroke: '#ffffff'}});
+        if (extensions != null) {
+            if (extensions.length > 1)
+                extensions = extensions[0];
+            if (creep.transfer(extensions, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(extensions, { visualizePathStyle: { stroke: '#ffffff' } });
+                creep.say('☭')
             }
         }
 
@@ -142,18 +149,20 @@ var peasant = {
     },
 
     storageTower: function (creep) {
-        var targets = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+        //寻找需要补充放能量的塔
+        var towers = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (structure) => {
                 STRUCTURE_CONTAINER
                 return structure.structureType == STRUCTURE_TOWER &&
                     structure.store.getUsedCapacity(RESOURCE_ENERGY) < structure.store.getFreeCapacity(RESOURCE_ENERGY);
             }
         });
-        if (targets != null && targets.length > 0) {
-            if (targets.length > 1)
-                targets = targets[0]
-            if (creep.transfer(targets, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targets, {visualizePathStyle: {stroke: '#ffffff'}});
+        if (towers != null) {
+            if (towers.length > 1)
+                towers = towers[0]
+            if (creep.transfer(towers, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(towers, { visualizePathStyle: { stroke: '#ffffff' } });
+                creep.say('☭')
             }
         }
 
@@ -166,15 +175,23 @@ var peasant = {
             filter: (structure) => {
                 STRUCTURE_CONTAINER
                 return (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN)
-                    && structure.store[RESOURCE_ENERGY] >= 300;
+                    && structure.store[RESOURCE_ENERGY] >= 200;
             }
         });
         //获取需要建造的建筑
         var reBuild = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+        //获取需要维修的路
+        var needRepair = creep.pos.findClosestByRange(STRUCTURE_ROAD, {
+            filter: (structure) => {
+                STRUCTURE_ROAD
+                return structure.hitMax < 4500;
+            }
+        });
+
         //结束建造
         if (creep.memory.building && ((structures == null && creep.store[RESOURCE_ENERGY] == 0) || reBuild == null)) {
             creep.memory.building = false;
-            creep.say('🔄 harvest');
+            creep.say('↻');
             this.resetMiningState(creep);
         }
         //开始建造
@@ -184,16 +201,9 @@ var peasant = {
                 structures = structures[0];
             if (reBuild.length > 1)
                 reBuild = reBuild[0];
-            creep.say('🚧 build');
+            creep.say('☩');
             this.resetMiningState(creep);
         }
-        //获取需要维修的路
-        var needRepair = creep.pos.findClosestByRange(STRUCTURE_ROAD, {
-            filter: (structure) => {
-                STRUCTURE_ROAD
-                return structure.hitMax < 4500;
-            }
-        });
         //不在建造状态，且有建筑需要维修，则开始维修
         if (!creep.memory.building && needRepair != null) {
             if (needRepair.length > 1)
@@ -205,13 +215,15 @@ var peasant = {
                         structures = structures[0];
                     if (creep.withdraw(structures, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(structures);
+                        creep.say('withdraw')
                     }
-                } else {
+                } else if (structures == null) {
                     this.mining(creep)
                 }
             } else {
                 if (creep.repair(needRepair, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(needRepair);
+                    creep.say('repair')
                 }
             }
         } else if (creep.memory.building) {//建造状态中
@@ -224,19 +236,19 @@ var peasant = {
                     if (creep.withdraw(structures, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(structures);
                     }
-                } else {
+                } else if (structures == null) {
                     this.mining(creep)
                 }
             } else {
                 //建造
                 if (creep.build(reBuild) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(reBuild, {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(reBuild, { visualizePathStyle: { stroke: '#ffffff' } });
                 }
             }
             //不在建造状态 并且携带资源为0
-        } else if (creep.store[RESOURCE_ENERGY] == 0) {
+        } else if (creep.store.getFreeCapacity() > 0) {
             this.mining(creep)
-        } else {
+        } else if (creep.store.getFreeCapacity() == 0) {
             this.storage(creep);
         }
     },
@@ -245,19 +257,19 @@ var peasant = {
 
         if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.upgrading = false;
-            creep.say('🔄 harvest');
+            creep.say('☀ harvest');
             this.resetMiningState(creep);
         }
         if (!creep.memory.upgrading && creep.store.getFreeCapacity() == 0) {
             creep.memory.upgrading = true;
-            creep.say('⚡ upgrade');
+            creep.say('❀');
             this.resetMiningState(creep);
         }
 
         if (creep.memory.upgrading) {
             if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
-                creep.say('⚡ controller');
+                creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' } });
+                creep.say('❀');
             }
         } else {
             this.mining(creep);
@@ -274,12 +286,14 @@ var peasant = {
     },
 
     getResources: function (creep) {
+        //寻找可存放能量的扩展容器
         var extensions = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (structure) => {
                 STRUCTURE_CONTAINER
                 return structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
             }
         });
+        //寻找拥有一定能量以上的容器或spawn
         var structures = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (structure) => {
                 STRUCTURE_CONTAINER
@@ -287,7 +301,8 @@ var peasant = {
                     ((extensions != null && structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY)) >= 300);
             }
         });
-        if (structures != null) {
+        //如果有能量且有扩展容器
+        if (structures != null && extensions != null) {
             if (structures > 1)
                 structures = structures[0];
             if (creep.withdraw(structures, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
