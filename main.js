@@ -67,7 +67,7 @@ module.exports.loop = function () {
                 var v = Math.floor((map[i][j] / 10));
                 if (v > max)
                     max = v;
-                if (v > max / 2 && v > 5) {
+                if (v > max / 2 && v > 0) {
                     var result = Game.rooms[roomName].createConstructionSite(i, j, STRUCTURE_ROAD);
                     if (result == OK) {
                         console.log("build road " + i + '.' + j)
@@ -77,6 +77,7 @@ module.exports.loop = function () {
             }
             console.log(rowInfo)
         }
+        initMap()
     }
 
     function searcingResources() {

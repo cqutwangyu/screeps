@@ -3,16 +3,16 @@ let roles = ['harvester', 'upgrader', 'builder', 'mediator'];
 let roleSize = [10, 2, 3, 1];
 var creepSize = [0, 0, 0, 0];
 //work:100,carry:50,move:50
-let creepBodys = [
-    [WORK, CARRY, MOVE],//200
-    [WORK, WORK, CARRY, MOVE],//300
-    [WORK, WORK, CARRY, CARRY, MOVE],//350
-    [WORK, WORK, CARRY, CARRY, MOVE, MOVE],//400
-    [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],//450
-    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],//550
-    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],//600
-    [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]//650
-];
+// let creepBodys = [
+//     [WORK, CARRY, MOVE],//200
+//     [WORK, WORK, CARRY, MOVE],//300
+//     [WORK, WORK, CARRY, CARRY, MOVE],//350
+//     [WORK, WORK, CARRY, CARRY, MOVE, MOVE],//400
+//     [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],//450
+//     [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],//550
+//     [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],//600
+//     [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]//650
+// ];
 
 function spawnCreep() {
     var maxSize = true;
@@ -26,17 +26,19 @@ function spawnCreep() {
     var creepBody = null;
     if (maxSize) {
         creepBody = getCreepBody(Memory.maxEngery)
+        // console.log('maxBody:' + creepBody)
     } else {
-        creepBody = getCreepBody(Memory.Engery1)
+        creepBody = getCreepBody(Memory.engery1)
+        // console.log('minBody:' + creepBody)
     }
     return creepBody;
 }
 
 function getCreepBody(engery) {
-    if (engery < 200) {
+    if (engery == undefined || engery < 200) {
         return null;
     }
-    var creepBody = creepBodys[0];
+    var creepBody = [WORK, CARRY, MOVE];
     engery = engery - 200;
     while (engery >= 50) {
         if (engery >= 100) {
@@ -58,28 +60,29 @@ var creepsFactory = {
         for (let index = 0; index < roles.length; index++) {
             var roleName = roles[index];
             var creepBody = spawnCreep();
-            if (creepBody == creepBodys[0] && Memory.engery1 < 200) {
-                spawnFlag = false;
-            }
             logInfo = logInfo + roleName;
-            if (creepSize[index] < roleSize[index]) {
+            // if (creepBody == creepBodys[0] && Memory.engery1 < 200) {
+            //     spawnFlag = false;
+            // }
+            // if (creepSize[index] < roleSize[index]) {
+            if (spawnFlag) {
+                var create = spawnFlag
                 var spawnCreepName = roleName + (Game.time % 100000);
                 if (spawnFlag) {
-                    var create = Game.spawns[spawnName].spawnCreep(creepBody, spawnCreepName,
+                    create = Game.spawns[spawnName].spawnCreep(creepBody, spawnCreepName,
                         {
                             memory: {
                                 role: roleName, //角色
                                 source: -1, //前往的能量采集点
                                 notpath: -1 //无法到达的能量采集点
-                            },
-                            directions: LEFT, //出生移动方向
+                            }
                         });
                     if (create == OK) {
                         console.log("spawning " + roleName + "body :" + creepBody)
                     }
                 }
                 if (creepBody != null && printFlag && create != OK) {
-                    console.log("ready spawn " + spawnCreepName + ":" + creepBody)
+                    console.log(create + " ready spawn " + spawnCreepName + ":" + creepBody)
                     printFlag = false;
                 }
             }

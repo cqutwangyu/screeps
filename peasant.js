@@ -92,6 +92,8 @@ var peasant = {
             creep.memory.dontPullMe = false;
             if (moveTo == ERR_NO_PATH) {
                 creep.say("⊗");
+                if (creep.memory.role == 'upgrader')
+                    return
                 if (creep.memory.notpath == 1) {
                     creep.memory.source = 0
                 } else {
