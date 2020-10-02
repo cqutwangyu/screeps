@@ -13,6 +13,10 @@ var peasant = {
             if (Game.spawns[spawnName].renewCreep(creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns[spawnName]);
                 creep.say('✞')
+            } else {
+                if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                    this.storage(creep);
+                }
             }
             if (creep.ticksToLive >= 1000) {
                 creep.memory.renew = false;
