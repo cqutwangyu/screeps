@@ -1,3 +1,4 @@
+// var creepsFactory = require('creepsFactory');
 let spawnName = 'W';
 var peasant = {
 
@@ -8,7 +9,12 @@ var peasant = {
         //     this.resetMiningState(creep);
         // }
         //creep续命
-        if (creep.memory.renew || (creep.ticksToLive < 500 && creep.hitsMax >= 300)) {
+        // var roleNum = _.filter(Game.creeps, (c) => c.memory.role == creep.memory.role);
+        if (creep.hitsMax < 400) {
+            creep.suicide()
+            console.log(creep.name + ' suicide')
+        }
+        if (creep.memory.renew || (creep.ticksToLive < 500 && creep.hitsMax >= 500)) {
             creep.memory.renew = true;
             if (Game.spawns[spawnName].renewCreep(creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns[spawnName]);
@@ -18,7 +24,7 @@ var peasant = {
                     this.storage(creep);
                 }
             }
-            if (creep.ticksToLive >= 1000) {
+            if (creep.ticksToLive >= 1300) {
                 creep.memory.renew = false;
             }
             return;
@@ -92,8 +98,6 @@ var peasant = {
             creep.memory.dontPullMe = false;
             if (moveTo == ERR_NO_PATH) {
                 creep.say("⊗");
-                if (creep.memory.role == 'upgrader')
-                    return
                 if (creep.memory.notpath == 1) {
                     creep.memory.source = 0
                 } else {
@@ -124,8 +128,8 @@ var peasant = {
             }
         });
         if (containers != null) {
-            if (containers.length > 1)
-                containers = containers[0];
+            // if (containers.length > 1)
+            //     containers = containers[0];
             if (creep.transfer(containers, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(containers, { visualizePathStyle: { stroke: '#ffffff' } });
                 creep.say('☭')
@@ -143,8 +147,8 @@ var peasant = {
             }
         });
         if (extensions != null) {
-            if (extensions.length > 1)
-                extensions = extensions[0];
+            // if (extensions.length > 1)
+            //     extensions = extensions[0];
             if (creep.transfer(extensions, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(extensions, { visualizePathStyle: { stroke: '#ffffff' } });
                 creep.say('☭')
@@ -164,8 +168,8 @@ var peasant = {
             }
         });
         if (towers != null) {
-            if (towers.length > 1)
-                towers = towers[0]
+            // if (towers.length > 1)
+            //     towers = towers[0]
             if (creep.transfer(towers, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(towers, { visualizePathStyle: { stroke: '#ffffff' } });
                 creep.say('☭')
@@ -187,12 +191,7 @@ var peasant = {
         //获取需要建造的建筑
         var reBuild = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
         //获取需要维修的路
-        var needRepair = creep.pos.findClosestByRange(STRUCTURE_ROAD, {
-            filter: (structure) => {
-                STRUCTURE_ROAD
-                return structure.hitMax < 4500;
-            }
-        });
+        var needRepair = creep.pos.findClosestByRange(FIND_STRUCTURES);
 
         //结束建造
         if (creep.memory.building && ((structures == null && creep.store[RESOURCE_ENERGY] == 0) || reBuild == null)) {
@@ -203,13 +202,14 @@ var peasant = {
         //开始建造
         if (!creep.memory.building && reBuild != null && (creep.store.getFreeCapacity() == 0 || structures != null)) {
             creep.memory.building = true;
-            if (structures != null && structures.length > 1)
-                structures = structures[0];
-            if (reBuild.length > 1)
-                reBuild = reBuild[0];
+            // if (structures != null && structures.length > 1)
+            //     structures = structures[0];
+            // if (reBuild.length > 1)
+            //     reBuild = reBuild[0];
             creep.say('☩');
             this.resetMiningState(creep);
         }
+        console.log('needRepair =>'+needRepair)
         //不在建造状态，且有建筑需要维修，则开始维修
         if (!creep.memory.building && needRepair != null) {
             if (needRepair.length > 1)

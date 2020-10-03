@@ -7,7 +7,7 @@ let spawnName = 'W';
 module.exports.loop = function () {
     // initMap()
     //每100time建造一次道路
-    if (Game.time % 100 == 0)
+    if (Game.time % 1000 == 0)
         buildRoad()
     gameRoomsRun()
     creepsRun()
@@ -29,7 +29,8 @@ module.exports.loop = function () {
     function creepsRun() {
         //creep生产工厂
         creepsFactory.run();
-        searcingResources()
+        //捡取掉落能量
+        // searcingResources()
         for (var name in Game.creeps) {
             if (!Game.creeps[name]) {
                 delete Memory.creeps[name];

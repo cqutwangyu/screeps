@@ -1,6 +1,6 @@
 let spawnName = 'W';
 let roles = ['harvester', 'upgrader', 'builder', 'mediator'];
-let roleSize = [10, 2, 3, 1];
+let roleSize = [10, 5, 3, 1];
 var creepSize = [0, 0, 0, 0];
 //work:100,carry:50,move:50
 // let creepBodys = [
@@ -13,7 +13,9 @@ var creepSize = [0, 0, 0, 0];
 //     [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],//600
 //     [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]//650
 // ];
-
+function getRoleSize() {
+    return roleSize;
+}
 function spawnCreep() {
     var maxSize = true;
     for (let index = 0; index < roles.length; index++) {
@@ -35,11 +37,11 @@ function spawnCreep() {
 }
 
 function getCreepBody(engery) {
-    if (engery == undefined || engery < 200) {
+    if (engery == undefined || engery < 400) {
         return null;
     }
-    var creepBody = [WORK, CARRY, MOVE];
-    engery = engery - 200;
+    var creepBody = [WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+    engery = engery - 400;
     while (engery >= 50) {
         if (engery >= 100) {
             creepBody.push(WORK);
@@ -64,8 +66,8 @@ var creepsFactory = {
             // if (creepBody == creepBodys[0] && Memory.engery1 < 200) {
             //     spawnFlag = false;
             // }
-            // if (creepSize[index] < roleSize[index]) {
-            if (spawnFlag) {
+            // if () {
+            if (creepSize[index] < roleSize[index]) {
                 var create = spawnFlag
                 var spawnCreepName = roleName + (Game.time % 100000);
                 if (spawnFlag) {
@@ -82,7 +84,7 @@ var creepsFactory = {
                     }
                 }
                 if (creepBody != null && printFlag && create != OK) {
-                    console.log(create + " ready spawn " + spawnCreepName + ":" + creepBody)
+                    console.log(create + " ready spawn " + spawnCreepName + " => " + creepBody)
                     printFlag = false;
                 }
             }
