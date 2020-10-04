@@ -7,8 +7,8 @@ let spawnName = 'W';
 module.exports.loop = function () {
     // initMap()
     //每100time建造一次道路
-    if (Game.time % 1000 == 0)
-        buildRoad()
+    // if (Game.time % 1000 == 0)
+    buildRoad()
     gameRoomsRun()
     creepsRun()
     if (Game.cpu.getUsed() > Game.cpu.tickLimit / 2) {
@@ -67,7 +67,7 @@ function initMap() {
 
 function buildRoad() {
     var map = Memory.map;
-    var max = 0;
+    var max = Memory.mapMax == undefined ? 0 : Memory.mapMax;
     for (let i = 0; i < map.length; i++) {
         var row = map[i]
         var rowInfo = ''
@@ -75,17 +75,18 @@ function buildRoad() {
             var v = Math.floor((map[i][j] / 10));
             if (v > max)
                 max = v;
-            if (v > max / 2 && v > 0) {
+            if (v > (max / 2) && v > 0) {
                 var result = Game.rooms[roomName].createConstructionSite(i, j, STRUCTURE_ROAD);
                 if (result == OK) {
                     console.log("build road " + i + '.' + j)
                 }
             }
-            rowInfo = rowInfo + v + " "
+            // rowInfo = rowInfo + v + " "
         }
-        console.log(rowInfo)
+        // console.log(rowInfo)
     }
-    initMap()
+    Memory.mapMax = max
+    // initMap()
 }
 
 function searcingResources() {
