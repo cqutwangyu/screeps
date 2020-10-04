@@ -10,6 +10,7 @@ module.exports.loop = function () {
     // if (Game.time % 1000 == 0)
     buildRoad()
     gameRoomsRun()
+    towers()
     creepsRun()
     if (Game.cpu.getUsed() > Game.cpu.tickLimit / 2) {
         console.log("Used half of CPU already!");
@@ -109,42 +110,57 @@ function searcingResources() {
 
 
 function towers() {
-    //防御塔
-    // var hostiles = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
-    // if (hostiles.length > 0) {
-    //     var username = hostiles[0].owner.username;
-    //     Game.notify(`User ${username} spotted in room ${roomName}`);
-    //     var towers = Game.rooms[roomName].find(
-    //         FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
-    //     towers.forEach(tower => tower.attack(hostiles[0]));
-    // }
-    // var towers = Game.rooms[roomName].find(
-    //     FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
 
-    //维修建筑
-    // var structures = Game.rooms[roomName].find(
-    //     FIND_STRUCTURES, {
+
+    // var needRepair = Game.rooms[roomName].room.find(FIND_STRUCTURES, {
     //     filter: (structure) => {
-    //         STRUCTURE_CONTAINER
-    //         return structure.structureType == STRUCTURE_CONTAINER && structure.hits < 5000 && structure.hits < structure.hitsMax / 2;
+    //         STRUCTURE_ROAD
+    //         return structure.hits < 4000;
     //     }
     // });
-    // if (structures != null && structures.length != 0) {
-    //     console.log(structures)
-    //     structures = structures[0];
-    //     var shortcreep = structures.pos.findClosestByPath(FIND_MY_CREEPS, {
-    //         filter: (structure) => {
-    //             LOOK_CREEPS
-    //             return structure.store.getFreeCapacity() == 0;
-    //         }
-    //     });
-    //     if (shortcreep != null) {
-    //         var repairResult = shortcreep.repair(structures);
-    //         if (repairResult == ERR_NOT_IN_RANGE) {
-    //             shortcreep.moveTo(structures);
-    //         }
-    //     } else {
-    //         console.log('repairResult：' + repairResult)
-    //     }
-    // }
+    // console.log(needRepair)
+    //寻找敌人
+    var hostiles = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
+    if (hostiles.length > 0) {
+        var username = hostiles[0].owner.username;
+        Game.notify(`User ${username} spotted in room ${roomName}`);
+        var towers = Game.rooms[roomName].find(
+            FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
+        towers.forEach(tower => tower.attack(hostiles[0]));
+    }
+    //获取防御塔
+    var towers = Game.rooms[roomName].find(
+        FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
+    //获取需要维修的容器
+    var structures = Game.rooms[roomName].find(
+        FIND_STRUCTURES, {
+        filter: (structure) => {
+            STRUCTURE_CONTAINER
+            return structure.structureType == STRUCTURE_CONTAINER && structure.hits < structure.hitsMax / 2;
+        }
+    });
+    //获取需要维修的路
+    var roads = towers[0].pos.findClosestByRange(FIND_STRUCTURES, {
+        filter: (structure) => {
+            STRUCTURE_ROAD
+            return structure.hits < 4000;
+        }
+    });
+    // console.log('hostiles' + hostiles)
+    // console.log('towers' + towers)
+    console.log('structures' + structures)
+    console.log('road' + roads)
+    var target;
+    if (structures.length > 0) {
+        target = structures[0];
+    } else if (roads.length > 0) {
+        target = roads[0]
+    }
+    if (target != undefined) {
+        console.log('repair ' + target)
+        if (towers.length > 0) {
+            var repairResult = towers[0].repair(target);
+            // console.log('repairResult：' + repairResult)
+        }
+    }
 }
