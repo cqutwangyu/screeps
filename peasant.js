@@ -10,11 +10,11 @@ var peasant = {
         // }
         //creep续命
         // var roleNum = _.filter(Game.creeps, (c) => c.memory.role == creep.memory.role);
-        if (creep.hitsMax < 400) {
-            creep.suicide()
+        if (creep.hitsMax < 700) {
+            // creep.suicide()
             console.log(creep.name + ' suicide')
         }
-        if (creep.memory.renew || (creep.ticksToLive < 500 && creep.hitsMax >= 500)) {
+        if (creep.memory.renew || (creep.ticksToLive < 500 && creep.hitsMax >= 1000)) {
             creep.memory.renew = true;
             if (Game.spawns[spawnName].renewCreep(creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns[spawnName]);
@@ -243,7 +243,17 @@ var peasant = {
                 creep.say('❀');
             }
         } else {
-            this.mining(creep);
+            var structures = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    STRUCTURE_CONTAINER
+                    return (structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= 200);
+                }
+            });
+            if (structures != null) {
+                this.getResources(creep);
+            } else {
+                this.mining(creep);
+            }
         }
     },
 
@@ -253,7 +263,7 @@ var peasant = {
         } else {
             this.storageTower(creep);
             this.storageExtension(creep);
-            // this.storageSpawn(creep);
+            this.storageSpawn(creep);
         }
     },
 
@@ -269,10 +279,16 @@ var peasant = {
         var structures = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (structure) => {
                 STRUCTURE_CONTAINER
-                return (structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= 200) ||
-                    ((structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY)) >= 200);
+                return (structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= 200);
             }
         });
+        if (structures == null)
+            structures = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    STRUCTURE_CONTAINER
+                    return (structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= 200);
+                }
+            });
         //如果有能量且有扩展容器
         if (structures != null) {
             if (structures > 1)

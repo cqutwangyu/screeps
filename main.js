@@ -140,22 +140,23 @@ function towers() {
         }
     });
     //获取需要维修的路
-    var roads = towers[0].pos.findClosestByRange(FIND_STRUCTURES, {
+    var road = towers[0].pos.findClosestByRange(FIND_STRUCTURES, {
         filter: (structure) => {
             STRUCTURE_ROAD
-            return structure.hits < 4000;
+            return structure.structureType == STRUCTURE_ROAD && structure.hits < 4000;
         }
     });
     // console.log('hostiles' + hostiles)
     // console.log('towers' + towers)
-    console.log('structures' + structures)
-    console.log('road' + roads)
+    // console.log('structures' + structures)
+    // console.log('road' + road)
     var target;
     if (structures.length > 0) {
         target = structures[0];
-    } else if (roads.length > 0) {
-        target = roads[0]
+    } else if (road != null) {
+        target = road
     }
+    // console.log('repair' + target)
     if (target != undefined) {
         console.log('repair ' + target)
         if (towers.length > 0) {
